@@ -1,0 +1,362 @@
+/* ============================================================
+   FoodBites — Kitchen Display System CSS
+   Dark mode, large fonts, optimized for kitchen environments
+   ============================================================ */
+
+:root {
+  --kds-bg:         #0a0d14;
+  --kds-card:       #111827;
+  --kds-elevated:   #1e2a3a;
+  --kds-border:     rgba(255,255,255,0.1);
+  --kds-pending:    #F59E0B;
+  --kds-preparing:  #3B82F6;
+  --kds-ready:      #22C55E;
+  --kds-delayed:    #EF4444;
+  --kds-text:       #f8fafc;
+  --kds-muted:      #94a3b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow-x: hidden; }
+
+.kds-body {
+  font-family:       'Outfit', sans-serif;
+  background:        var(--kds-bg);
+  color:             var(--kds-text);
+  min-height:        100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.kds-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             1rem;
+  padding:         .9rem 1.5rem;
+  background:      rgba(17,24,39,.95);
+  border-bottom:   2px solid var(--kds-border);
+  position:        sticky;
+  top:             0;
+  z-index:         100;
+  backdrop-filter: blur(20px);
+}
+
+.kds-logo {
+  font-size:   1.4rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+.kds-logo span {
+  display:       inline-block;
+  background:    linear-gradient(135deg, #16A34A, #F59E0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size:     .8em;
+  margin-left:   .4rem;
+  font-weight:   700;
+  letter-spacing:.1em;
+}
+
+.kds-clock {
+  font-family: 'Outfit', monospace;
+  font-size:   1.6rem;
+  font-weight: 700;
+  color:        var(--kds-text);
+  letter-spacing:.05em;
+}
+
+.kds-controls {
+  display:     flex;
+  align-items: center;
+  gap:         .75rem;
+}
+
+.kds-status-dot {
+  width:         10px;
+  height:        10px;
+  border-radius: 50%;
+  background:    #22C55E;
+  box-shadow:    0 0 8px rgba(34,197,94,.8);
+  animation:     kdsBlink 2s ease-in-out infinite;
+  flex-shrink:   0;
+}
+.kds-status-dot.offline { background: #EF4444; box-shadow: 0 0 8px rgba(239,68,68,.8); }
+@keyframes kdsBlink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.kds-order-count {
+  font-size:   .9rem;
+  color:       var(--kds-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kds-btn {
+  background:    rgba(255,255,255,.07);
+  border:        1px solid var(--kds-border);
+  color:         var(--kds-text);
+  padding:       .45rem .9rem;
+  border-radius: 8px;
+  font-size:     .85rem;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    all .2s ease;
+  text-decoration: none;
+  display:       inline-flex;
+  align-items:   center;
+  white-space:   nowrap;
+}
+.kds-btn:hover { background: rgba(255,255,255,.12); }
+.kds-btn-logout:hover { background: rgba(239,68,68,.15); color: #f87171; }
+
+/* ── Legend ── */
+.kds-legend {
+  display:     flex;
+  align-items: center;
+  gap:         1.5rem;
+  padding:     .6rem 1.5rem;
+  background:  rgba(17,24,39,.6);
+  border-bottom:1px solid var(--kds-border);
+  flex-wrap:   wrap;
+}
+.kds-legend-item {
+  font-size:   .82rem;
+  font-weight: 700;
+  letter-spacing:.03em;
+}
+.kds-legend-item.pending   { color: var(--kds-pending);   }
+.kds-legend-item.preparing { color: var(--kds-preparing); }
+.kds-legend-item.ready     { color: var(--kds-ready);     }
+.kds-legend-item.delayed   { color: var(--kds-delayed);   }
+
+/* ── Orders Grid ── */
+.kds-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap:                   1.25rem;
+  padding:               1.5rem;
+  align-items:           start;
+}
+
+/* ── Loading ── */
+.kds-loading {
+  grid-column:     1/-1;
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             1rem;
+  height:          300px;
+  color:           var(--kds-muted);
+}
+.kds-spinner {
+  width:          48px;
+  height:         48px;
+  border:         4px solid rgba(255,255,255,.1);
+  border-top-color: var(--kds-pending);
+  border-radius:  50%;
+  animation:      spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Empty State ── */
+.kds-empty {
+  display:         none;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  height:          60vh;
+  text-align:      center;
+  gap:             1rem;
+}
+.kds-empty-icon { font-size: 5rem; }
+.kds-empty h2   { font-size: 2rem; font-weight: 800; }
+.kds-empty p    { color: var(--kds-muted); font-size: 1rem; }
+
+/* ── Order Card ── */
+.kds-card {
+  background:    var(--kds-card);
+  border-radius: 16px;
+  border:        2px solid var(--kds-border);
+  padding:       1.25rem;
+  display:       flex;
+  flex-direction:column;
+  gap:           1rem;
+  transition:    all .3s ease;
+  opacity:       0;
+  transform:     translateY(10px);
+  position:      relative;
+  overflow:      hidden;
+}
+.kds-card.visible { opacity: 1; transform: translateY(0); }
+
+/* Status-based top border accent */
+.kds-card-pending   { border-top: 4px solid var(--kds-pending);   }
+.kds-card-preparing { border-top: 4px solid var(--kds-preparing); }
+.kds-card-ready     { border-top: 4px solid var(--kds-ready);     }
+
+/* New order flash animation */
+.kds-card-new {
+  animation: newFlash 1.5s ease-in-out 3;
+}
+@keyframes newFlash {
+  0%,100% { box-shadow: none; }
+  50%      { box-shadow: 0 0 0 4px rgba(245,158,11,.6), 0 0 40px rgba(245,158,11,.2); }
+}
+
+/* Delayed order — pulsing red */
+.kds-card.delayed {
+  border-color: var(--kds-delayed) !important;
+  animation:    delayedPulse 2s ease-in-out infinite;
+}
+@keyframes delayedPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  50%      { box-shadow: 0 0 0 6px rgba(239,68,68,.2); }
+}
+
+/* ── Card Header ── */
+.kds-card-header {
+  display:     flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kds-order-id {
+  font-size:   1.6rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  color:        var(--kds-text);
+}
+
+.kds-status {
+  padding:       .35rem .9rem;
+  border-radius: 999px;
+  font-size:     .82rem;
+  font-weight:   800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.kds-status-pending   { background: rgba(245,158,11,.2);  color: var(--kds-pending);   }
+.kds-status-preparing { background: rgba(59,130,246,.2);  color: var(--kds-preparing); }
+.kds-status-ready     { background: rgba(34,197,94,.2);   color: var(--kds-ready);     }
+
+/* ── Customer ── */
+.kds-customer {
+  font-size:   1rem;
+  font-weight: 700;
+  color:       var(--kds-muted);
+}
+
+/* ── Items List ── */
+.kds-items {
+  display:        flex;
+  flex-direction: column;
+  gap:            .5rem;
+  background:     rgba(255,255,255,.04);
+  border-radius:  10px;
+  padding:        .75rem;
+}
+
+.kds-item {
+  display:     flex;
+  align-items: center;
+  gap:         .75rem;
+  font-size:   1rem;
+}
+.kds-item-qty {
+  background:    var(--kds-elevated);
+  border:        1px solid var(--kds-border);
+  border-radius: 6px;
+  padding:       .2rem .55rem;
+  font-weight:   900;
+  font-size:     1rem;
+  color:         var(--kds-text);
+  min-width:     40px;
+  text-align:    center;
+}
+.kds-item-name { font-size: 1rem; font-weight: 600; }
+
+/* ── Meta ── */
+.kds-meta { display: flex; flex-direction: column; gap: .4rem; }
+.kds-meta-row {
+  display:     flex;
+  align-items: flex-start;
+  gap:         .5rem;
+  font-size:   .9rem;
+  color:       var(--kds-muted);
+}
+.kds-meta-label { font-size: .95rem; flex-shrink: 0; }
+.kds-notes {
+  background:    rgba(245,158,11,.08);
+  border:        1px solid rgba(245,158,11,.2);
+  border-radius: 6px;
+  padding:       .4rem .6rem;
+  color:         var(--kds-pending);
+  font-size:     .85rem;
+}
+
+/* ── Card Footer ── */
+.kds-card-footer {
+  display:     flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: .75rem;
+  border-top:  1px solid var(--kds-border);
+  gap:         .75rem;
+}
+
+.kds-timer {
+  font-family: 'Outfit', monospace;
+  font-size:   1.1rem;
+  font-weight: 700;
+  color:       var(--kds-muted);
+}
+.kds-timer.timer-delayed { color: var(--kds-delayed); }
+
+.kds-actions { display: flex; gap: .5rem; }
+
+.kds-action-btn {
+  padding:       .55rem 1.1rem;
+  border-radius: 8px;
+  font-family:   'Outfit', sans-serif;
+  font-size:     .9rem;
+  font-weight:   700;
+  cursor:        pointer;
+  border:        none;
+  transition:    all .2s ease;
+}
+.kds-action-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.kds-btn-start {
+  background: rgba(59,130,246,.2);
+  color:      var(--kds-preparing);
+  border:     1px solid rgba(59,130,246,.4);
+}
+.kds-btn-start:hover:not(:disabled) {
+  background: rgba(59,130,246,.35);
+}
+
+.kds-btn-done {
+  background: rgba(34,197,94,.2);
+  color:      var(--kds-ready);
+  border:     1px solid rgba(34,197,94,.4);
+}
+.kds-btn-done:hover:not(:disabled) {
+  background: rgba(34,197,94,.35);
+}
+
+/* ── Responsive ── */
+@media(max-width:768px) {
+  .kds-grid { grid-template-columns: 1fr 1fr; gap: .75rem; padding: .75rem; }
+  .kds-clock { font-size: 1.2rem; }
+  .kds-order-id { font-size: 1.3rem; }
+  .kds-item { font-size: .9rem; }
+  .kds-legend { gap: 1rem; font-size: .75rem; }
+}
+
+@media(max-width:500px) {
+  .kds-grid { grid-template-columns: 1fr; }
+  .kds-controls .kds-btn:not(#soundToggle) { display: none; }
+}
